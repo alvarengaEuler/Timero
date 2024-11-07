@@ -1,5 +1,9 @@
 import { StyleSheet, ScrollView } from "react-native";
-
+import BottomSheet, {
+  BottomSheetModal,
+  BottomSheetScrollView,
+} from "@gorhom/bottom-sheet";
+import { useMemo, useRef } from "react";
 import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
 import { Card } from "@/components/Card";
@@ -31,9 +35,18 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     // justifyContent: "center",
-    // borderColor: "red",
-    // borderWidth: 1,
+
     padding: 8,
+    backgroundColor: "#f9f9f9",
+  },
+  contentContainer: {
+    flex: 1,
+    alignItems: "center",
+  },
+  containerHeadline: {
+    fontSize: 24,
+    fontWeight: "600",
+    padding: 20,
   },
   title: {
     fontSize: 20,
