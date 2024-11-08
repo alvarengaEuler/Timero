@@ -9,7 +9,9 @@ type CardProps = {
 };
 export function Card({ name, score = 0, bgColor }: CardProps) {
   return (
-    <View style={[styles.container, { backgroundColor: bgColor }]}>
+    <View
+      style={[styles.container, { backgroundColor: bgColor, marginBottom: 8 }]}
+    >
       <View
         style={{
           flexDirection: "row",

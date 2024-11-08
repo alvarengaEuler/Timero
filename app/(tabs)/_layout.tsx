@@ -8,6 +8,7 @@ import { useColorScheme } from "@/components/useColorScheme";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 import { View } from "@/components/Themed";
 import { useBottomSheetStore } from "@/store/bottom-sheet-store";
+import { useGameStore } from "@/store/games-store";
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -20,10 +21,12 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { isBottomSheetOpen, openBottomSheet } = useBottomSheetStore();
+  const addPlayer = useGameStore((state) => state.createSoloPlayer);
 
   const onPressSanzela = () => {
-    console.log("call store");
-    openBottomSheet();
+    // console.log("call store");
+    // openBottomSheet();
+    addPlayer();
   };
   return (
     <Tabs

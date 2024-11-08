@@ -2,20 +2,18 @@ import React from "react";
 import { View, Text, FlatList, StyleSheet, Button } from "react-native";
 
 import { Player, useGameStore } from "@/store/games-store";
+import { Card } from "./Card";
 
 // Componente para representar cada jogador solo
 const SoloPlayerCard: React.FC<{ player: Player }> = ({ player }) => (
-  <View style={[styles.card, { backgroundColor: player.color }]}>
-    <Text style={styles.name}>{player.name}</Text>
-    <Text style={styles.score}>Score: {player.score}</Text>
-  </View>
+  <Card name={player.name} score={player.score} bgColor={player.color} />
 );
 
 // Componente para mostrar quando a lista estiver vazia
 const EmptyState: React.FC<{ onAddPlayer: () => void }> = ({ onAddPlayer }) => (
   <View style={styles.emptyStateContainer}>
     <Text style={styles.emptyStateText}>No solo players available.</Text>
-    <Button title="Add Solo Player" onPress={onAddPlayer} />
+    <Button title="Add a New Player" onPress={onAddPlayer} />
   </View>
 );
 
@@ -30,6 +28,7 @@ export const SoloPlayersList = () => {
 
   return (
     <FlatList<Player>
+      style={{ width: "100%" }}
       data={soloPlayers}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => <SoloPlayerCard player={item} />}
@@ -41,7 +40,7 @@ export const SoloPlayersList = () => {
 
 const styles = StyleSheet.create({
   listContainer: {
-    padding: 10,
+    padding: 8,
   },
   card: {
     borderRadius: 8,

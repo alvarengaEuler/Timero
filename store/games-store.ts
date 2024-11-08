@@ -1,9 +1,8 @@
 import { create } from 'zustand';
-
-import { v4 as uuidv4 } from 'uuid';
+import uuid from 'react-native-uuid'
 
 export interface Player {
-  id: string;
+  id: any;
   name: string;
   color: string;
   score: number;
@@ -66,7 +65,7 @@ export const useGameStore = create<GameState>((set) => ({
     set((state) => ({
       games: [
         ...state.games,
-        { ...game, players: [], id: uuidv4() },
+        { ...game, players: [], id: uuid.v4.toString() },
       ],
     })),
 
@@ -105,7 +104,7 @@ export const useGameStore = create<GameState>((set) => ({
       soloPlayers: [
         ...state.soloPlayers,
         {
-          id: uuidv4(),
+          id: uuid.v4(),
           name: randomNames[Math.floor(Math.random() * randomNames.length)],
           color: randomColor(),
           score: 0,
