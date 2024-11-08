@@ -1,13 +1,16 @@
-import {create} from 'zustand';
+import { create } from 'zustand';
 
-interface Player {
+import { v4 as uuidv4 } from 'uuid';
+
+export interface Player {
+  id: string;
   name: string;
   color: string;
   score: number;
 }
 
-interface GameState {
-  // Game attributes
+export interface Game {
+  id: string;
   mostPointWins: boolean;
   leastPointWins: boolean;
   gameName: string;
@@ -20,75 +23,134 @@ interface GameState {
   gameCounter: number;
   winner: string | null;
   isFinished: boolean;
-
-  // Player attributes
   players: Player[];
-
-  // Methods to update attributes
-  setMostPointWins: (value: boolean) => void;
-  setLeastPointWins: (value: boolean) => void;
-  setGameName: (name: string) => void;
-  setGameDescription: (description: string) => void;
-  setGameUrl: (url: string) => void;
-  setGameCode: (code: string) => void;
-  setGameColor: (color: string) => void;
-  setRounds: (rounds: number) => void;
-  setStartingPoints: (points: number) => void;
-  setGameCounter: (counter: number) => void;
-  setWinner: (winner: string | null) => void;
-  setIsFinished: (finished: boolean) => void;
-
-  // Player management methods
-  addPlayer: (name: string, color: string, score?: number) => void;
-  updatePlayerScore: (name: string, score: number) => void;
-  removePlayer: (name: string) => void;
 }
 
+interface GameState {
+  games: Game[];
+  currentGameIndex: number | null;
+  soloPlayers: Player[];
+  finishedGamesHistory: Game[];
+
+  // Game management
+  addGame: (game: Omit<Game, 'players' | 'id'>) => void;
+  updateGame: (index: number, updatedGame: Partial<Game>) => void;
+  removeGame: (index: number) => void;
+  selectGame: (index: number) => void;
+  finishGame: () => void;
+
+  // Player management
+  createSoloPlayer: () => void;
+  addPlayerToCurrentGame: (playerId: string) => void;
+  updatePlayerScoreInCurrentGame: (name: string, score: number) => void;
+  removePlayerFromCurrentGame: (name: string) => void;
+}
+
+const randomNames = [
+  'Alice', 'Bob', 'Charlie', 'David', 'Eve', 'Frank', 'Grace', 'Heidi', 'Ivan', 'Judy', 'Kenny', 'Lara', 'Mallory',
+  'Niaj', 'Oscar', 'Peggy', 'Quincy', 'Rupert', 'Sybil', 'Trent', 'Uma', 'Vera', 'Walter', 'Xander', 'Yvonne', 
+  'Zane', 'Amber', 'Blake', 'Casey', 'Dakota', 'Emery', 'Finn', 'Gale', 'Harper', 'Indigo', 'Jesse', 'Kim', 
+  'Logan', 'Morgan', 'Nova', 'Orion', 'Parker', 'Quinn', 'Reese', 'Sky', 'Tate', 'Uri', 'Val', 'Wren', 'Zara'
+];
+
+const randomColor = () =>
+  `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+
 export const useGameStore = create<GameState>((set) => ({
-  // Initial values for game attributes
-  mostPointWins: true,
-  leastPointWins: false,
-  gameName: '',
-  gameDescription: '',
-  gameUrl: '',
-  gameCode: '',
-  gameColor: '#FFFFFF',
-  rounds: 0,
-  startingPoints: 0,
-  gameCounter: 0,
-  winner: null,
-  isFinished: false,
+  games: [],
+  currentGameIndex: null,
+  soloPlayers: [],
+  finishedGamesHistory: [],
 
-  // Initial player list
-  players: [],
-
-  // Update methods for game attributes
-  setMostPointWins: (value) => set(() => ({ mostPointWins: value })),
-  setLeastPointWins: (value) => set(() => ({ leastPointWins: value })),
-  setGameName: (name) => set(() => ({ gameName: name })),
-  setGameDescription: (description) => set(() => ({ gameDescription: description })),
-  setGameUrl: (url) => set(() => ({ gameUrl: url })),
-  setGameCode: (code) => set(() => ({ gameCode: code })),
-  setGameColor: (color) => set(() => ({ gameColor: color })),
-  setRounds: (rounds) => set(() => ({ rounds })),
-  setStartingPoints: (points) => set(() => ({ startingPoints: points })),
-  setGameCounter: (counter) => set(() => ({ gameCounter: counter })),
-  setWinner: (winner) => set(() => ({ winner })),
-  setIsFinished: (finished) => set(() => ({ isFinished: finished })),
-
-  // Player management methods
-  addPlayer: (name, color, score = 0) =>
+  addGame: (game) =>
     set((state) => ({
-      players: [...state.players, { name, color, score }]
+      games: [
+        ...state.games,
+        { ...game, players: [], id: uuidv4() },
+      ],
     })),
-  updatePlayerScore: (name, score) =>
+
+  updateGame: (index, updatedGame) =>
     set((state) => ({
-      players: state.players.map((player) =>
+      games: state.games.map((game, i) =>
+        i === index ? { ...game, ...updatedGame } : game
+      ),
+    })),
+
+  removeGame: (index) =>
+    set((state) => ({
+      games: state.games.filter((_, i) => i !== index),
+      currentGameIndex:
+        state.currentGameIndex === index ? null : state.currentGameIndex,
+    })),
+
+  selectGame: (index) => set(() => ({ currentGameIndex: index })),
+
+  finishGame: () =>
+    set((state) => {
+      if (state.currentGameIndex === null) return state;
+      const finishedGame = {
+        ...state.games[state.currentGameIndex],
+        isFinished: true,
+      };
+      return {
+        games: state.games.filter((_, i) => i !== state.currentGameIndex),
+        finishedGamesHistory: [...state.finishedGamesHistory, finishedGame],
+        currentGameIndex: null,
+      };
+    }),
+
+  createSoloPlayer: () =>
+    set((state) => ({
+      soloPlayers: [
+        ...state.soloPlayers,
+        {
+          id: uuidv4(),
+          name: randomNames[Math.floor(Math.random() * randomNames.length)],
+          color: randomColor(),
+          score: 0,
+        },
+      ],
+    })),
+
+  addPlayerToCurrentGame: (playerId) =>
+    set((state) => {
+      if (state.currentGameIndex === null) return state;
+
+      const playerToAdd = state.soloPlayers.find(
+        (player) => player.id === playerId
+      );
+
+      if (!playerToAdd) return state;
+
+      const updatedGames = [...state.games];
+      updatedGames[state.currentGameIndex].players.push(playerToAdd);
+
+      return {
+        games: updatedGames,
+        soloPlayers: state.soloPlayers.filter((player) => player.id !== playerId),
+      };
+    }),
+
+  updatePlayerScoreInCurrentGame: (name, score) =>
+    set((state) => {
+      if (state.currentGameIndex === null) return state;
+      const updatedGames = [...state.games];
+      updatedGames[state.currentGameIndex].players = updatedGames[
+        state.currentGameIndex
+      ].players.map((player) =>
         player.name === name ? { ...player, score } : player
-      )
-    })),
-  removePlayer: (name) =>
-    set((state) => ({
-      players: state.players.filter((player) => player.name !== name)
-    })),
+      );
+      return { games: updatedGames };
+    }),
+
+  removePlayerFromCurrentGame: (name) =>
+    set((state) => {
+      if (state.currentGameIndex === null) return state;
+      const updatedGames = [...state.games];
+      updatedGames[state.currentGameIndex].players = updatedGames[
+        state.currentGameIndex
+      ].players.filter((player) => player.name !== name);
+      return { games: updatedGames };
+    }),
 }));

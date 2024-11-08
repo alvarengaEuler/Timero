@@ -7,18 +7,25 @@ import { useMemo, useRef } from "react";
 import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
 import { Card } from "@/components/Card";
+import { SoloPlayersList } from "@/components/SolorPlayerList";
 
 export default function TabOneScreen() {
   return (
-    <View style={styles.container}>
-      <ScrollView style={{ width: "100%" }}>
-        <View style={{ gap: 8 }}>
+    <View
+      style={styles.container}
+      lightColor="#eee"
+      darkColor="rgba(255,255,255,0.1)"
+    >
+      <SoloPlayersList />
+      {/* <ScrollView style={{ width: "100%" }}>
+        <View style={{ gap: 8, backgroundColor: "transparent" }}>
           <Card name="Euler" bgColor="#1abc9c" score={0} />
           <Card name="Ingrid" bgColor="#3498db" score={10} />
           <Card name="Eydde" bgColor="#8e44ad" score={7} />
           <Card name="Mario" bgColor="#e67e22" score={9} />
         </View>
-      </ScrollView>
+      </ScrollView> */}
+
       {/* <Text style={styles.title}>Tab One</Text>
       <View
         style={styles.separator}
@@ -37,7 +44,6 @@ const styles = StyleSheet.create({
     // justifyContent: "center",
 
     padding: 8,
-    backgroundColor: "#f9f9f9",
   },
   contentContainer: {
     flex: 1,

@@ -7,6 +7,7 @@ import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/components/useColorScheme";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 import { View } from "@/components/Themed";
+import { useBottomSheetStore } from "@/store/bottom-sheet-store";
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -18,7 +19,12 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { isBottomSheetOpen, openBottomSheet } = useBottomSheetStore();
 
+  const onPressSanzela = () => {
+    console.log("call store");
+    openBottomSheet();
+  };
   return (
     <Tabs
       screenOptions={{
@@ -47,18 +53,17 @@ export default function TabLayout() {
                   )}
                 </Pressable>
               </Link>
-              <Link href="/modal" asChild>
-                <Pressable>
-                  {({ pressed }) => (
-                    <FontAwesome
-                      name="plus"
-                      size={25}
-                      color={Colors[colorScheme ?? "light"].text}
-                      style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                    />
-                  )}
-                </Pressable>
-              </Link>
+
+              <Pressable onPress={onPressSanzela}>
+                {({ pressed }) => (
+                  <FontAwesome
+                    name="plus"
+                    size={25}
+                    color={Colors[colorScheme ?? "light"].text}
+                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+                  />
+                )}
+              </Pressable>
             </View>
           ),
         }}

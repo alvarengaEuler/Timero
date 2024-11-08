@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, TextInput, Button } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
   DarkTheme,
@@ -15,10 +15,12 @@ import BottomSheet, {
   BottomSheetModal,
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import { useColorScheme } from "@/components/useColorScheme";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import CustomBottomSheet from "@/components/bottom-sheet/new-player";
+import { NewGameBS } from "@/components/bottom-sheet/new-game";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -59,9 +61,16 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const snapPoints = useMemo(() => ["25%", "50%", "70%"], []);
+  // const snapPoints = useMemo(() => ["25%", "50%", "70%"], []);
   // ref
-  const bottomSheetRef = useRef<BottomSheet>(null);
+  // const bottomSheetRef = useRef<BottomSheet>(null);
+
+  // // const bottomSheetRef = useRef<BottomSheet>(null);
+  // const [title, setTitle] = useState("Passing my data 🔥");
+
+  // const handleClosePress = () => bottomSheetRef.current?.close();
+  // const handleOpenPress = () => bottomSheetRef.current?.expand();
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
@@ -69,7 +78,13 @@ function RootLayoutNav() {
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: "modal" }} />
         </Stack>
-        <BottomSheet
+        <NewGameBS />
+
+        {/* <TextInput style={styles.input} onChangeText={setTitle} value={title} />
+        <Button title="Open" onPress={handleOpenPress} />
+        <Button title="Close" onPress={handleClosePress} />
+        <CustomBottomSheet ref={bottomSheetRef} title={title} /> */}
+        {/* <BottomSheet
           ref={bottomSheetRef}
           enableDynamicSizing={false}
           index={1}
@@ -80,7 +95,7 @@ function RootLayoutNav() {
               Awesome Bottom Sheet 🎉
             </Text>
           </View>
-        </BottomSheet>
+        </BottomSheet> */}
       </ThemeProvider>
     </GestureHandlerRootView>
   );
@@ -103,5 +118,18 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "600",
     padding: 20,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  input: {
+    width: "80%",
+    height: 50,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 20,
   },
 });
