@@ -43,7 +43,12 @@ export default function TabLayout() {
           title: "Quick Start",
           tabBarIcon: ({ color }) => <TabBarIcon name="flash" color={color} />,
           headerRight: () => (
-            <View style={{ flexDirection: "row" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                backgroundColor: "transparent",
+              }}
+            >
               <Link href="/modal" asChild>
                 <Pressable>
                   {({ pressed }) => (
@@ -51,7 +56,10 @@ export default function TabLayout() {
                       name="info-circle"
                       size={25}
                       color={Colors[colorScheme ?? "light"].text}
-                      style={{ marginRight: 25, opacity: pressed ? 0.5 : 1 }}
+                      style={{
+                        marginRight: 25,
+                        opacity: pressed ? 0.5 : 1,
+                      }}
                     />
                   )}
                 </Pressable>

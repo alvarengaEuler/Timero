@@ -6,8 +6,20 @@ type CardProps = {
   name: string;
   score: number;
   bgColor: string;
+  onClickLeftButton: () => void;
+  onClickRightButton: () => void;
+  onClickPencil: () => void;
+  onClickTrash: () => void;
 };
-export function Card({ name, score = 0, bgColor }: CardProps) {
+export function Card({
+  name,
+  score = 0,
+  bgColor,
+  onClickLeftButton,
+  onClickRightButton,
+  onClickPencil,
+  onClickTrash,
+}: CardProps) {
   return (
     <View
       style={[styles.container, { backgroundColor: bgColor, marginBottom: 8 }]}
@@ -21,18 +33,20 @@ export function Card({ name, score = 0, bgColor }: CardProps) {
         }}
       >
         <Text style={styles.title}>{name}</Text>
-        <Pressable
-          onPress={() => {
-            console.log("press edit");
+        <View
+          style={{
+            flexDirection: "row",
+            backgroundColor: "transparent",
+            gap: 16,
           }}
         >
-          <Octicons
-            size={16}
-            // style={{ marginBottom: -3 }}
-            name="pencil"
-            color="white"
-          />
-        </Pressable>
+          <Pressable onPress={onClickPencil}>
+            <Octicons size={16} name="pencil" color="white" />
+          </Pressable>
+          <Pressable onPress={onClickTrash}>
+            <Octicons size={16} name="trash" color="white" />
+          </Pressable>
+        </View>
       </View>
       <View
         style={{
@@ -44,11 +58,7 @@ export function Card({ name, score = 0, bgColor }: CardProps) {
           backgroundColor: "transparent",
         }}
       >
-        <Pressable
-          onPress={() => {
-            console.log("press minus");
-          }}
-        >
+        <Pressable onPress={onClickLeftButton}>
           <Octicons
             size={32}
             // style={{ marginBottom: -3 }}
@@ -57,11 +67,7 @@ export function Card({ name, score = 0, bgColor }: CardProps) {
           />
         </Pressable>
         <Text style={styles.score}>{score}</Text>
-        <Pressable
-          onPress={() => {
-            console.log("press plus");
-          }}
-        >
+        <Pressable onPress={onClickRightButton}>
           <Octicons
             size={32}
             // style={{ marginBottom: -3 }}

@@ -40,9 +40,12 @@ interface GameState {
 
   // Player management
   createSoloPlayer: () => void;
+  removeSoloPlayer: (playerId: string) => void;
   addPlayerToCurrentGame: (playerId: string) => void;
   updatePlayerScoreInCurrentGame: (name: string, score: number) => void;
   removePlayerFromCurrentGame: (name: string) => void;
+  addPointsToSoloPlayer:  (playerId: string, points: number)=> void;
+  removePointsFromSoloPlayer: (playerId: string, points: number) => void;
 }
 
 const randomNames = [
@@ -112,6 +115,13 @@ export const useGameStore = create<GameState>((set) => ({
       ],
     })),
 
+
+    removeSoloPlayer: (playerId) => {
+      set((state) => ({
+        soloPlayers: state.soloPlayers.filter((player) => player.id !== playerId),
+      }));
+    },
+
   addPlayerToCurrentGame: (playerId) =>
     set((state) => {
       if (state.currentGameIndex === null) return state;
@@ -130,6 +140,24 @@ export const useGameStore = create<GameState>((set) => ({
         soloPlayers: state.soloPlayers.filter((player) => player.id !== playerId),
       };
     }),
+
+      // Adiciona pontos ao jogador solo
+  addPointsToSoloPlayer: (playerId: string, points: number) => {
+    set((state) => ({
+      soloPlayers: state.soloPlayers.map((player) =>
+        player.id === playerId ? { ...player, score: player.score + points } : player
+      ),
+    }));
+  },
+
+  // Remove pontos do jogador solo
+  removePointsFromSoloPlayer: (playerId: string, points: number) => {
+    set((state) => ({
+      soloPlayers: state.soloPlayers.map((player) =>
+        player.id === playerId ? { ...player, score: player.score - points } : player
+      ),
+    }));
+  },
 
   updatePlayerScoreInCurrentGame: (name, score) =>
     set((state) => {

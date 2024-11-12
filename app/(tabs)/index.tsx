@@ -17,22 +17,13 @@ export default function TabOneScreen() {
       darkColor="rgba(255,255,255,0.1)"
     >
       <SoloPlayersList />
-      {/* <ScrollView style={{ width: "100%" }}>
-        <View style={{ gap: 8, backgroundColor: "transparent" }}>
-          <Card name="Euler" bgColor="#1abc9c" score={0} />
-          <Card name="Ingrid" bgColor="#3498db" score={10} />
-          <Card name="Eydde" bgColor="#8e44ad" score={7} />
-          <Card name="Mario" bgColor="#e67e22" score={9} />
-        </View>
-      </ScrollView> */}
-
-      {/* <Text style={styles.title}>Tab One</Text>
+      {/* 
+      <EditScreenInfo path="app/(tabs)/index.tsx" /> */}
       <View
-        style={styles.separator}
+        style={styles.buttonContainer}
         lightColor="#eee"
         darkColor="rgba(255,255,255,0.1)"
       />
-      <EditScreenInfo path="app/(tabs)/index.tsx" /> */}
     </View>
   );
 }
@@ -44,6 +35,8 @@ const styles = StyleSheet.create({
     // justifyContent: "center",
 
     // padding: 8,
+    // borderWidth: 1,
+    // borderColor: "red",
   },
   contentContainer: {
     flex: 1,
@@ -58,9 +51,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
+  buttonContainer: {
+    height: 70,
+    width: "100%",
+
+    // borderWidth: 1,
+    // borderColor: "red",
   },
 });
