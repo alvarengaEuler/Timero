@@ -32,7 +32,21 @@ export function Card({
           backgroundColor: "transparent",
         }}
       >
-        <Text style={styles.title}>{name}</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            backgroundColor: "transparent",
+            gap: 8,
+          }}
+        >
+          <Pressable onPress={onClickPencil}>
+            <Octicons size={16} name="flame" color="white" />
+          </Pressable>
+          <Text style={styles.title}>{name}</Text>
+        </View>
+
         <View
           style={{
             flexDirection: "row",
@@ -40,10 +54,22 @@ export function Card({
             gap: 16,
           }}
         >
-          <Pressable onPress={onClickPencil}>
+          <Pressable
+            style={{
+              paddingLeft: 16,
+              paddingVertical: 8,
+            }}
+            onPress={onClickPencil}
+          >
             <Octicons size={16} name="pencil" color="white" />
           </Pressable>
-          <Pressable onPress={onClickTrash}>
+          <Pressable
+            style={{
+              paddingLeft: 16,
+              paddingVertical: 8,
+            }}
+            onPress={onClickTrash}
+          >
             <Octicons size={16} name="trash" color="white" />
           </Pressable>
         </View>
@@ -83,10 +109,19 @@ export function Card({
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: 120,
-
+    height: 150,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
     borderRadius: 8,
-    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
   },
   title: {
     fontSize: 20,

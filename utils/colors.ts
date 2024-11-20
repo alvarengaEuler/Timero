@@ -1,7 +1,7 @@
 // utils/colors.ts
 
 // Utility function to determine the best contrast color (black or white)
-const getContrastColor = (hexColor: string) => {
+export const getContrastColor = (hexColor: string) => {
   // Convert hex color to RGB
   const r = parseInt(hexColor.slice(1, 3), 16);
   const g = parseInt(hexColor.slice(3, 5), 16);

@@ -30,6 +30,8 @@ interface GameState {
   currentGameIndex: number | null;
   soloPlayers: Player[];
   finishedGamesHistory: Game[];
+  winner: Player | null;
+  isTie: boolean;
 
   // Game management
   addGame: (game: Omit<Game, 'players' | 'id'>) => void;
@@ -46,23 +48,19 @@ interface GameState {
   removePlayerFromCurrentGame: (name: string) => void;
   addPointsToSoloPlayer:  (playerId: string, points: number)=> void;
   removePointsFromSoloPlayer: (playerId: string, points: number) => void;
+
+  // Helper methods
+  calculateWinner: () => void;
 }
 
-const randomNames = [
-  'Alice', 'Bob', 'Charlie', 'David', 'Eve', 'Frank', 'Grace', 'Heidi', 'Ivan', 'Judy', 'Kenny', 'Lara', 'Mallory',
-  'Niaj', 'Oscar', 'Peggy', 'Quincy', 'Rupert', 'Sybil', 'Trent', 'Uma', 'Vera', 'Walter', 'Xander', 'Yvonne', 
-  'Zane', 'Amber', 'Blake', 'Casey', 'Dakota', 'Emery', 'Finn', 'Gale', 'Harper', 'Indigo', 'Jesse', 'Kim', 
-  'Logan', 'Morgan', 'Nova', 'Orion', 'Parker', 'Quinn', 'Reese', 'Sky', 'Tate', 'Uri', 'Val', 'Wren', 'Zara'
-];
-
-const randomColor = () =>
-  `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
-
-export const useGameStore = create<GameState>((set) => ({
+export const useGameStore = create<GameState>((set, get) => ({
   games: [],
   currentGameIndex: null,
   soloPlayers: [],
   finishedGamesHistory: [],
+  sortOrder: 'asc',
+  winner: null,
+  isTie: false,
 
   addGame: (game) =>
     set((state) => ({
@@ -102,7 +100,7 @@ export const useGameStore = create<GameState>((set) => ({
       };
     }),
 
-  createSoloPlayer: () =>
+  createSoloPlayer: () => {
     set((state) => ({
       soloPlayers: [
         ...state.soloPlayers,
@@ -113,16 +111,19 @@ export const useGameStore = create<GameState>((set) => ({
           score: 0,
         },
       ],
-    })),
+    }));
+    get().calculateWinner();
+  },
 
 
     removeSoloPlayer: (playerId) => {
       set((state) => ({
         soloPlayers: state.soloPlayers.filter((player) => player.id !== playerId),
       }));
+      get().calculateWinner();
     },
 
-  addPlayerToCurrentGame: (playerId) =>
+    addPlayerToCurrentGame: (playerId) =>
     set((state) => {
       if (state.currentGameIndex === null) return state;
 
@@ -142,13 +143,26 @@ export const useGameStore = create<GameState>((set) => ({
     }),
 
       // Adiciona pontos ao jogador solo
+  // addPointsToSoloPlayer: (playerId: string, points: number) => {
+  //   set((state) => ({
+  //     soloPlayers: state.soloPlayers.map((player) =>
+  //       player.id === playerId ? { ...player, score: player.score + points } : player
+  //     ),
+  //   }));
+  // },
+
   addPointsToSoloPlayer: (playerId: string, points: number) => {
-    set((state) => ({
-      soloPlayers: state.soloPlayers.map((player) =>
+    set((state) => {
+      const updatedPlayers = state.soloPlayers.map((player) =>
         player.id === playerId ? { ...player, score: player.score + points } : player
-      ),
-    }));
-  },
+      );
+      const sortedPlayers = sortPlayers(updatedPlayers, 'desc');
+      return { soloPlayers: sortedPlayers };
+    });
+    get().calculateWinner();
+   },
+
+   //
 
   // Remove pontos do jogador solo
   removePointsFromSoloPlayer: (playerId: string, points: number) => {
@@ -157,6 +171,7 @@ export const useGameStore = create<GameState>((set) => ({
         player.id === playerId ? { ...player, score: player.score - points } : player
       ),
     }));
+    get().calculateWinner();
   },
 
   updatePlayerScoreInCurrentGame: (name, score) =>
@@ -171,7 +186,7 @@ export const useGameStore = create<GameState>((set) => ({
       return { games: updatedGames };
     }),
 
-  removePlayerFromCurrentGame: (name) =>
+  removePlayerFromCurrentGame: (name) => {
     set((state) => {
       if (state.currentGameIndex === null) return state;
       const updatedGames = [...state.games];
@@ -179,5 +194,45 @@ export const useGameStore = create<GameState>((set) => ({
         state.currentGameIndex
       ].players.filter((player) => player.name !== name);
       return { games: updatedGames };
-    }),
+    });
+    get().calculateWinner();
+  },
+
+// calcula winner
+  calculateWinner: () => {
+      const players = get().soloPlayers;
+      if (players.length <=1) {
+        set(() => ({ winner: null, isTie: false }));
+        return;
+      }
+  
+      // Find the maximum score
+      const maxScore = Math.max(...players.map((player) => player.score));
+      const topPlayers = players.filter((player) => player.score === maxScore);
+  
+      if (topPlayers.length === 1) {
+        // Only one winner
+        set(() => ({ winner: topPlayers[0], isTie: false }));
+      } else {
+        // Tie situation
+        set(() => ({ winner: null, isTie: true }));
+      }
+    },
 }));
+
+
+const randomNames = [
+  'Alice', 'Bob', 'Charlie', 'David', 'Eve', 'Frank', 'Grace', 'Heidi', 'Ivan', 'Judy', 'Kenny', 'Lara', 'Mallory',
+  'Niaj', 'Oscar', 'Peggy', 'Quincy', 'Rupert', 'Sybil', 'Trent', 'Uma', 'Vera', 'Walter', 'Xander', 'Yvonne', 
+  'Zane', 'Amber', 'Blake', 'Casey', 'Dakota', 'Emery', 'Finn', 'Gale', 'Harper', 'Indigo', 'Jesse', 'Kim', 
+  'Logan', 'Morgan', 'Nova', 'Orion', 'Parker', 'Quinn', 'Reese', 'Sky', 'Tate', 'Uri', 'Val', 'Wren', 'Zara'
+];
+
+const randomColor = () =>
+  `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+
+type SortOrder = 'asc' | 'desc';
+// Função para ordenar jogadores
+const sortPlayers = (players: Player[], order: SortOrder): Player[] => {
+  return players.sort((a, b) => (order === 'asc' ? a.score - b.score : b.score - a.score));
+}
